@@ -1,3 +1,27 @@
 <resources>
     <string name="app_name">BoxBox</string>
+    <string name="shapes_data">
+#L\n
+- - - -\n
+* 0 0 0 \n
+* 0 0 0\n
+* * 0 0\n
+0 0 0 0\n
+- - - -\n
+* * * 0\n
+* 0 0 0\n
+0 0 0 0\n
+0 0 0 0\n
+- - - -\n
+* * 0 0\n
+* 0 0 0\n
+* 0 0 0\n
+0 0 0 0\n
+- - - -\n
+    *  \n
+* * *  \n
+       \n
+       \n
+- - - -\n
+    </string>
 </resources>
