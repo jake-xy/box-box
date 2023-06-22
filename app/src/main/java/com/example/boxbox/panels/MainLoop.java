@@ -125,6 +125,13 @@ public class MainLoop extends GamePanel {
                 rowsToClear = new int[0];
             }
 
+            // condition to start dragging
+            if (!shape.dragging) {
+                if (shape.pressStartTime > 0 && System.currentTimeMillis() - shape.pressStartTime > 100) {
+                    shape.setDragging(true);
+                }
+            }
+
             // check if this shape can be placed in the board
             if (!shape.dragging) {
                 boolean canPlace = false;
@@ -225,7 +232,6 @@ public class MainLoop extends GamePanel {
         }
 
         // drawing the score
-        System.out.println("score: " + (int)(displayScore));
         scoreFont.render(
             Integer.toString((int)(displayScore)),
             (int) (Game.screen.w/2 - scoreFont.strWidth(Integer.toString((int)(displayScore)))/2),

@@ -32,6 +32,7 @@ public class Shape implements Serializable {
     double initialX = 0, initialY = 0, prevX, prevY;
 
     public boolean dragging, drawBoundingRect = false, canDrop = false, active = true;
+    public double pressStartTime = 0;
 
     public Shape(int id, int shape) {
         this.shape = shape;
@@ -49,19 +50,12 @@ public class Shape implements Serializable {
 
 
     public boolean onTouch(MotionEvent event, Boxbox[][] board) {
+        System.out.println("touch");
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 if (boundingRect.collides((int) event.getX(), (int) event.getY())) {
+                    pressStartTime = System.currentTimeMillis();
                     if (!dragging) {
-                        dragging = true;
-                        double newW = boundingRect.w/displayBoxSize * boxSize,
-                                newH = boundingRect.h/displayBoxSize * boxSize;
-
-                        setPos(
-                        Game.screen.w/3 * id - (Game.screen.w/3/2) - newW/2,
-                        boundingRect.top - (newH + displayBoxSize) )
-                        ;
-
                         prevX = event.getX();
                         prevY = event.getY();
 
@@ -71,6 +65,7 @@ public class Shape implements Serializable {
                 }
 
             case MotionEvent.ACTION_UP:
+                pressStartTime = 0;
                 if (dragging) {
                     dragging = false;
                     if (!canDrop) {
@@ -94,7 +89,6 @@ public class Shape implements Serializable {
                 if (dragging) {
                     move(0, 0, board);
                 }
-
         }
 
         return false;
@@ -289,7 +283,19 @@ public class Shape implements Serializable {
                  // If it's a color indicator and foundShape == true..
                  // then that means a rotation variant (or building the matrix) is completed
                  if (foundShape && r+g+b+a > 255*3) { // (r > 0, 255, 255, 255) --> color indicator
-                     matrices = append3D(matrix, matrices);
+                     boolean hasBox = false;
+                     for (int i = 0; i < 5; i++) {
+                         for (int k = 0; k < 5; k++) {
+                             if (matrix[i][k] != null) {
+                                 hasBox = true;
+                                 i = 8;
+                                 break;
+                             }
+                         }
+                     }
+                     if (hasBox) {
+                        matrices = append3D(matrix, matrices);
+                     }
                      matrix = new Boxbox[5][5];
                  }
 
@@ -388,4 +394,16 @@ public class Shape implements Serializable {
         }
     }
 
+    public void setDragging(boolean flag) {
+        if (!dragging) {
+            dragging = true;
+            double newW = boundingRect.w/displayBoxSize * boxSize,
+                    newH = boundingRect.h/displayBoxSize * boxSize;
+
+            setPos(
+                    Game.screen.w/3 * id - (Game.screen.w/3/2) - newW/2,
+                    boundingRect.top - (newH + displayBoxSize) )
+            ;
+        }
+    }
 }
