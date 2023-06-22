@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.support.annotation.NonNull;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -49,6 +50,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         // start game loop
         gameLoop.startLoop();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        if (mainLoop.onTouch(event)) return true;
+
+        return super.onTouchEvent(event);
     }
 
     @Override

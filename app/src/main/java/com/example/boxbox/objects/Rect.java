@@ -40,6 +40,26 @@ public class Rect implements Serializable{
     }
 
 
+    public boolean isInsideRect(Rect rect) {
+        // if this rect is inside the passed rect
+
+        if (left > rect.left && right < rect.right) {
+            if (top > rect.top && bot < rect.bot) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    public boolean covers(Rect rect) {
+        // if the passed rect is inside this rect
+
+        return false;
+    }
+
+
     public boolean collides(Rect rect) {
 
         if (right > rect.left && left < rect.right) {
