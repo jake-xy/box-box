@@ -9,6 +9,7 @@ public class Boxbox extends Rect {
 
     public final static int
         YELLOW = 0, CYAN = 1, RED = 2, GREEN = 3, ORANGE = 4, BLUE = 5, PURPLE = 6,
+        DEAD_COLOR = 7,
         colorsNum = 7;
 
     public int color;

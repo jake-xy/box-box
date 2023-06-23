@@ -29,7 +29,8 @@ public abstract class Sprites {
 
         // getting the individual box sprite
         int spriteBoxSize = boxes_simple_sprite.getHeight();
-        for (int i = 0; i < Boxbox.colorsNum; i++) {
+        int boxesNum = boxes_simple_sprite.getWidth()/spriteBoxSize;
+        for (int i = 0; i < boxesNum; i++) {
             Bitmap box = Bitmap.createBitmap(
                 boxes_simple_sprite,
                 spriteBoxSize*i, 0,
@@ -40,7 +41,8 @@ public abstract class Sprites {
         }
 
         spriteBoxSize = boxes_neon_sprite.getHeight();
-        for (int i = 0; i < Boxbox.colorsNum; i++) {
+        boxesNum = boxes_neon_sprite.getWidth()/spriteBoxSize;
+        for (int i = 0; i < boxesNum; i++) {
             Bitmap box = Bitmap.createBitmap(
                     boxes_neon_sprite,
                     spriteBoxSize*i, 0,
@@ -51,7 +53,8 @@ public abstract class Sprites {
         }
 
         spriteBoxSize = boxes_neon_alt_sprite.getHeight();
-        for (int i = 0; i < Boxbox.colorsNum; i++) {
+        boxesNum = boxes_neon_alt_sprite.getWidth()/spriteBoxSize;
+        for (int i = 0; i < boxesNum; i++) {
             Bitmap box = Bitmap.createBitmap(
                     boxes_neon_alt_sprite,
                     spriteBoxSize*i, 0,

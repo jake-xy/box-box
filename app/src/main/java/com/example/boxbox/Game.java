@@ -20,7 +20,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public static Rect screen;
 
     // panels
-    MainLoop mainLoop;
+    public static MainLoop mainLoop;
 
     // misc
     public static double dt, prevTime, GAME_SPEED = 30;
@@ -46,7 +46,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         Sprites.initialize();
 
         // intialize panels
-        mainLoop = new MainLoop(this);
+        mainLoop = new MainLoop();
 
         // start game loop
         gameLoop.startLoop();

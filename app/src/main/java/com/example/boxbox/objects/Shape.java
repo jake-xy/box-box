@@ -19,8 +19,8 @@ public class Shape implements Serializable {
     public static final double boxSize = Game.screen.w*0.85 / 8;;
     public static final double displayBoxSize = boxSize*0.5;
     public final static int // ease-of-use constants for shape
-        O = 0, I = 1, Z = 2, S = 3, L = 4, J = 5, T = 6, o = 7, I4 = 8, I2 = 9, I3 = 10, D = 11, j1 = 12, j2 = 13,
-        shapesNum = 14
+        O = 0, I = 1, Z = 2, S = 3, L = 4, J = 5, T = 6, o = 7, I4 = 8, I2 = 9, I3 = 10, D = 11, j1 = 12, j2 = 13, DOT = 14,
+        shapesNum = 15
     ;
 
     public Boxbox[][][] matrices = new Boxbox[0][5][5];
@@ -56,8 +56,8 @@ public class Shape implements Serializable {
                 if (boundingRect.collides((int) event.getX(), (int) event.getY())) {
                     pressStartTime = System.currentTimeMillis();
                     if (!dragging) {
-                        prevX = event.getX();
-                        prevY = event.getY();
+                        prevX = event.getRawX();
+                        prevY = event.getRawY();
 
                         prevBoard = copy(board);
                     }
@@ -81,8 +81,8 @@ public class Shape implements Serializable {
 
                     move(xVel, yVel, board);
 
-                    prevX = event.getX();
-                    prevY = event.getY();
+                    prevX = event.getRawX();
+                    prevY = event.getRawY();
                 }
 
             default:
@@ -118,14 +118,15 @@ public class Shape implements Serializable {
 
                                 // if canDrop == true, it means there are already shadow boxes present on the board.
                                 // Coincidentally, if at least 1 box moves to a space on the board, it means that
-                                // the shape has been moved. So, revert the board back to its previous state before
-                                // any shadow box is placed in order to check if the shape can be dropped to the new position
+                                // the shape has been moved. So, revert the board back to its previous state (before
+                                // any shadow box is placed) in order to check if the shape can be dropped to the new position
                                 // that it has been moved to.
                                 if (canDrop) {
                                     canDrop = false;
                                     revertBoard(board);
                                 }
                             }
+                            // if at least 1 box moves to a spot in the board where there is an active box already
                             else if (board[boardR][boardC] != null && board[boardR][boardC].active) {
                                 if (canDrop) {
                                     canDrop = false;
@@ -134,6 +135,7 @@ public class Shape implements Serializable {
                             }
                         }
                     }
+                    // if at least 1 box is out of the board
                     else {
                         if (canDrop) {
                             canDrop = false;
