@@ -50,7 +50,6 @@ public class Shape implements Serializable {
 
 
     public boolean onTouch(MotionEvent event, Boxbox[][] board) {
-        System.out.println("touch");
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 if (boundingRect.collides((int) event.getX(), (int) event.getY())) {
@@ -67,11 +66,14 @@ public class Shape implements Serializable {
             case MotionEvent.ACTION_UP:
                 pressStartTime = 0;
                 if (dragging) {
-                    dragging = false;
-                    if (!canDrop) {
-                        setPos(initialX, initialY);
-                    }
+                    setDragging(false);
                     return true;
+                }
+                if (boundingRect.collides((int) event.getX(), (int) event.getY())) {
+                    if (!dragging) {
+                        rotate();
+                        return true;
+                    }
                 }
 
             case MotionEvent.ACTION_MOVE:
@@ -406,6 +408,12 @@ public class Shape implements Serializable {
                     Game.screen.w/3 * id - (Game.screen.w/3/2) - newW/2,
                     boundingRect.top - (newH + displayBoxSize) )
             ;
+        }
+        else {
+            dragging = false;
+            if (!canDrop) {
+                setPos(initialX, initialY);
+            }
         }
     }
 }

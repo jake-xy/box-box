@@ -16,15 +16,17 @@ public class MainLoop extends GamePanel {
     Boxbox[][] board = new Boxbox[8][8];
     XFont scoreFont = new XFont(R.drawable.bahnshcrift_light, Game.screen.h*0.1);
     XFont plusScoreFont = new XFont(R.drawable.bahnshcrift_light, Game.screen.h*0.035);
+    Particle[] particles = new Particle[0];
 
     public static Rect boardRect;
     public int[] rowsToClear = new int[0], rowsCleared;
     public int[] colsToClear = new int[0], colsCleared;
 
     int score = 0;
-    double displayScore = 0, checkGameOverStartTime = 0, gameOverTick = 0;
+    double displayScore = 0, checkGameOverStartTime = 0;
 
     private boolean startGameOver = false, gameOver = false;
+    private double startGameOverTime, gameOverTime;
 
     public MainLoop() {
         // initializing the board rect
@@ -45,26 +47,30 @@ public class MainLoop extends GamePanel {
             }
         }
 
-//        boolean flag = false;
-//        for (int r = 0; r < 7; r++) {
-//            flag = flag ? false : true;
-//            for (int c = 0; c < 8; c++) {
-//                if (flag) {
-//                    if (c % 2 == 0) {
-//                        placeBox(r, c, randInt(Boxbox.colorsNum), board);
-//                    }
-//                }
-//                else {
-//                    if (c % 2 == 1) {
-//                        placeBox(r, c, randInt(Boxbox.colorsNum), board);
-//                    }
-//                }
-//            }
-//        }
+        boolean flag = false;
+        for (int r = 0; r < 5; r++) {
+            flag = !flag;
+            for (int c = 0; c < 8; c++) {
+                if (flag) {
+                    if (c % 2 == 0) {
+                        placeBox(r, c, randInt(Boxbox.colorsNum), board);
+                    }
+                }
+                else {
+                    if (c % 2 == 1) {
+                        placeBox(r, c, randInt(Boxbox.colorsNum), board);
+                    }
+                }
+            }
+        }
 
     }
 
     public boolean onTouch(MotionEvent event) {
+
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            addParticles(event.getRawX(), event.getRawY(), 4, 10, Boxbox.CYAN);
+        }
 
         if (!startGameOver) {
             for (Shape shape : shapes) {
@@ -124,12 +130,20 @@ public class MainLoop extends GamePanel {
                 for (int c : colsToClear) {
                     // clear that column
                     for (int r = 0; r < 8; r++) {
+                        // add clear sprite
+                        if (board[r][c] != null) {
+                            addParticles(board[r][c].centerX, board[r][c].centerY, board[r][c].color);
+                        }
                         board[r][c] = null;
                     }
                 }
 
                 for (int r : rowsToClear) {
                     for (int c = 0; c < 8; c++) {
+                        // add clear sprite
+                        if (board[r][c] != null) {
+                            addParticles(board[r][c].centerX, board[r][c].centerY, board[r][c].color);
+                        }
                         board[r][c] = null;
                     }
                 }
@@ -158,14 +172,14 @@ public class MainLoop extends GamePanel {
 
             // condition to start dragging
             if (!shape.dragging) {
-                if (shape.pressStartTime > 0 && System.currentTimeMillis() - shape.pressStartTime > 50) {
+                if (shape.pressStartTime > 0 && System.currentTimeMillis() - shape.pressStartTime > 100) {
                     shape.setDragging(true);
                 }
             }
         }
 
         // checking game over
-        if (System.currentTimeMillis() - checkGameOverStartTime > 600) {
+        if (!startGameOver && System.currentTimeMillis() - checkGameOverStartTime > 600) {
             // updating shapes to either active or inactve
             if (!draggingAshape) {
                 for (Shape shape : shapes) {
@@ -198,7 +212,7 @@ public class MainLoop extends GamePanel {
                 }
             }
 
-            // condition for gameover
+            // checking if there is an active shape
             boolean hasActiveShape = false;
             for (Shape shape : shapes) {
                 if (shape.active) {
@@ -207,8 +221,10 @@ public class MainLoop extends GamePanel {
                 }
             }
 
-            if (!hasActiveShape) {
+            // condition for game over
+            if (!startGameOver && !hasActiveShape) {
                 startGameOver = true;
+                startGameOverTime = System.currentTimeMillis();
             }
 
             checkGameOverStartTime = 0;
@@ -231,37 +247,60 @@ public class MainLoop extends GamePanel {
             displayScore = score;
         }
 
-
+        // during game over
         if (startGameOver) {
-
-            gameOverTick += 1 *Game.dt;
-            int tick = (int)gameOverTick;
-
             // animation
-            if (!gameOver && tick % (int)(Game.GAME_SPEED*0.07) == 0) {
+            if (!gameOver && (System.currentTimeMillis() - startGameOverTime) >= 70) {
+                // fill the board with shapes from bottom to top left to right
                 if (MainLoop.getBoxesNum(board) < 64) {
-                    int r = randInt(8), c = randInt(8);
-                    while (board[r][c] != null) {
-                        r = randInt(8); c = randInt(8);
+                    for (int r = 7; r >= 0; r--) {
+                        for (int c = 0; c < 8; c++) {
+                            if (board[r][c] == null) {
+                                MainLoop.placeBox(r, c, randInt(Boxbox.colorsNum), board);
+                                r = -1;
+                                break;
+                            }
+                        }
                     }
-
-                    MainLoop.placeBox(r, c, Boxbox.DEAD_COLOR, board);
                 }
                 else {
                     // game over
                     gameOver = true;
-                    gameOverTick = 0;
+                    gameOverTime = System.currentTimeMillis();
                 }
+                startGameOverTime = System.currentTimeMillis();
             }
 
+            // actual game over
             if (gameOver) {
-                if (tick > 0 && tick % (int)(Game.GAME_SPEED*1.5) == 0) {
-                    // open gameover panel
-                    Game.mainLoop = new MainLoop();
+                if (System.currentTimeMillis() - gameOverTime > 1000) {
+                    // clear the board and add particles
+                    for (int r = 0; r < 8; r++) {
+                        for (int c = 0; c < 8; c++) {
+                            if (board[r][c] != null) {
+                                addParticles(board[r][c].centerX, board[r][c].centerY, board[r][c].color);
+                            }
+                            board[r][c] = null;
+                        }
+                    }
+                    if (particles.length == 0) {
+                        Game.mainLoop = new MainLoop();
+                    }
                 }
+
             }
+        }
 
+        // update the particles
+        for (Particle particle : particles) {
+            particle.update();
+        }
 
+        // remove it once its small enough
+        for (Particle particle : particles) {
+            if ((int)particle.size <= 0) {
+                particles = remove(particle, particles);
+            }
         }
 
     }
@@ -324,6 +363,54 @@ public class MainLoop extends GamePanel {
             (int) (Game.screen.h * 0.04),
             canvas
         );
+
+        // drawing the particles
+        for (Particle particle : particles) {
+            particle.draw(canvas);
+        }
+    }
+
+
+    public void addParticles(double x, double y, int boxColor) {
+        int count = randInt(10, 41);
+
+        for (int i = 0; i < count; i++) {
+            double size = randInt((int)(Shape.boxSize*0.35), (int)(Shape.boxSize*0.65));
+            int xDir = new int[] {1, -1}[randInt(2)];
+            int yDir = new int[] {1, -1}[randInt(2)];
+            double xVel = randInt(10, 50+1)/10.0 *xDir;
+            double yVel = randInt(10, 50+1)/10.0 *yDir;
+
+            Particle p = new Particle(
+                new double[] {x, y},
+                new double[] {xVel, yVel},
+                size,
+                boxColor
+            );
+
+            particles = append(p, particles);
+        }
+    }
+
+    public void addParticles(double x, double y, int minCount, int maxCount, int boxColor) {
+        int count = randInt(minCount, maxCount);
+
+        for (int i = 0; i < count; i++) {
+            double size = randInt((int)(Shape.boxSize*0.35), (int)(Shape.boxSize*0.65));
+            int xDir = new int[] {1, -1}[randInt(2)];
+            int yDir = new int[] {1, -1}[randInt(2)];
+            double xVel = randInt(10, 50+1)/10.0 *xDir;
+            double yVel = randInt(10, 50+1)/10.0 *yDir;
+
+            Particle p = new Particle(
+                    new double[] {x, y},
+                    new double[] {xVel, yVel},
+                    size,
+                    boxColor
+            );
+
+            particles = append(p, particles);
+        }
     }
 
 

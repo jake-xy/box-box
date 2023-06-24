@@ -60,6 +60,19 @@ public abstract class Utils {
     }
 
 
+    public static Particle[] append(Particle item, Particle[] array) {
+        Particle[] out = new Particle[array.length + 1];
+
+        for (int i = 0; i < array.length; i++) {
+            out[i] = array[i];
+        }
+
+        out[out.length-1] = item;
+
+        return out;
+    }
+
+
     public static Boxbox[][][] append3D(Boxbox[][] item, Boxbox[][][] array) {
         Boxbox[][][] out = new Boxbox[array.length+1][item.length][item[0].length];
 
@@ -129,6 +142,24 @@ public abstract class Utils {
 
     public static Shape[] remove(Shape item, Shape[] array) {
         Shape[] out = new Shape[array.length - 1];
+
+        int offSet = 0;
+        for (int i = 0; i < array.length; i++) {
+            if (!item.equals(array[i])) {
+                out[i-offSet] = array[i];
+            }
+            else {
+                offSet += 1;
+            }
+        }
+
+        return out;
+    }
+
+
+    public static Particle[] remove(Particle item, Particle[] array) {
+        System.out.println("particle removesd");
+        Particle[] out = new Particle[array.length - 1];
 
         int offSet = 0;
         for (int i = 0; i < array.length; i++) {
