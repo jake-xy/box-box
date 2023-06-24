@@ -69,9 +69,11 @@ public class Shape implements Serializable {
                     setDragging(false);
                     return true;
                 }
+                // debug (for rotate powerup)
                 if (boundingRect.collides((int) event.getX(), (int) event.getY())) {
                     if (!dragging) {
                         rotate();
+                        Sound.play(Sound.touch);
                         return true;
                     }
                 }
@@ -400,7 +402,7 @@ public class Shape implements Serializable {
 
     public void setDragging(boolean flag) {
         if (!dragging) {
-            dragging = true;
+            dragging = flag;
             double newW = boundingRect.w/displayBoxSize * boxSize,
                     newH = boundingRect.h/displayBoxSize * boxSize;
 
@@ -408,11 +410,13 @@ public class Shape implements Serializable {
                     Game.screen.w/3 * id - (Game.screen.w/3/2) - newW/2,
                     boundingRect.top - (newH + displayBoxSize) )
             ;
+            Sound.play(Sound.pick_up);
         }
         else {
-            dragging = false;
+            dragging = flag;
             if (!canDrop) {
                 setPos(initialX, initialY);
+                Sound.play(Sound.pick_up);
             }
         }
     }

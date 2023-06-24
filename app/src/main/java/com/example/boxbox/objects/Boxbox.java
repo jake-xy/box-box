@@ -22,7 +22,7 @@ public class Boxbox extends Rect {
 
     public void draw(Canvas canvas) {
         Paint paint = new Paint();
-        Bitmap box = Sprites.boxes_neon_alt[color];
+        Bitmap box = Sprites.boxes_neon[color];
         box = Bitmap.createScaledBitmap(box, (int) w, (int) h, false);
 
         paint.setAlpha(active ? 255 : 100);

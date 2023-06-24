@@ -17,6 +17,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     // init objects
     GameLoop gameLoop;
     public static Resources res;
+    public static Context context;
     public static Rect screen;
 
     // panels
@@ -42,8 +43,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         // initialize static variables
         screen = new Rect(0, 0, getWidth(), getHeight());
         res = this.getResources();
-        prevTime = System.currentTimeMillis();
+        context = this.getContext();
         Sprites.initialize();
+        Sound.initialize();
+        prevTime = System.currentTimeMillis();
 
         // intialize panels
         mainLoop = new MainLoop();

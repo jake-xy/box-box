@@ -47,22 +47,23 @@ public class MainLoop extends GamePanel {
             }
         }
 
-        boolean flag = false;
-        for (int r = 0; r < 5; r++) {
-            flag = !flag;
-            for (int c = 0; c < 8; c++) {
-                if (flag) {
-                    if (c % 2 == 0) {
-                        placeBox(r, c, randInt(Boxbox.colorsNum), board);
-                    }
-                }
-                else {
-                    if (c % 2 == 1) {
-                        placeBox(r, c, randInt(Boxbox.colorsNum), board);
-                    }
-                }
-            }
-        }
+//        // debug
+//        boolean flag = false;
+//        for (int r = 0; r < 5; r++) {
+//            flag = !flag;
+//            for (int c = 0; c < 8; c++) {
+//                if (flag) {
+//                    if (c % 2 == 0) {
+//                        placeBox(r, c, randInt(Boxbox.colorsNum), board);
+//                    }
+//                }
+//                else {
+//                    if (c % 2 == 1) {
+//                        placeBox(r, c, randInt(Boxbox.colorsNum), board);
+//                    }
+//                }
+//            }
+//        }
 
     }
 
@@ -156,11 +157,19 @@ public class MainLoop extends GamePanel {
                     score += (colsToClear.length + rowsToClear.length - 1)*20;
                 }
 
+                // play clear SFX
+                if (rowsToClear.length > 0 || colsToClear.length > 0) {
+                    Sound.play(Sound.clear);
+                }
+
                 // debug
                 rowsCleared = rowsToClear.clone();
                 colsCleared = colsToClear.clone();
                 colsToClear = new int[0];
                 rowsToClear = new int[0];
+
+                // play drop SFX
+                Sound.play(Sound.drop);
 
                 checkGameOverStartTime = System.currentTimeMillis();
             }
@@ -172,7 +181,7 @@ public class MainLoop extends GamePanel {
 
             // condition to start dragging
             if (!shape.dragging) {
-                if (shape.pressStartTime > 0 && System.currentTimeMillis() - shape.pressStartTime > 100) {
+                if (shape.pressStartTime > 0 && System.currentTimeMillis() - shape.pressStartTime > 90) {
                     shape.setDragging(true);
                 }
             }
@@ -225,6 +234,9 @@ public class MainLoop extends GamePanel {
             if (!startGameOver && !hasActiveShape) {
                 startGameOver = true;
                 startGameOverTime = System.currentTimeMillis();
+
+                // play game over sound
+                Sound.play(Sound.game_over_fill_box);
             }
 
             checkGameOverStartTime = 0;
@@ -257,6 +269,8 @@ public class MainLoop extends GamePanel {
                         for (int c = 0; c < 8; c++) {
                             if (board[r][c] == null) {
                                 MainLoop.placeBox(r, c, randInt(Boxbox.colorsNum), board);
+                                // play sfx
+                                Sound.play(Sound.game_over_fill_box);
                                 r = -1;
                                 break;
                             }
@@ -267,6 +281,7 @@ public class MainLoop extends GamePanel {
                     // game over
                     gameOver = true;
                     gameOverTime = System.currentTimeMillis();
+
                 }
                 startGameOverTime = System.currentTimeMillis();
             }
